@@ -1,0 +1,130 @@
+Load map
+========
+
+Module:  forestfire.obj
+ Text segment:  948 bytes, load point 0x00400000
+ Data segment:  2936 bytes, load point 0x10000000
+ Symbols:
+                        Name Section Mode    Value
+                   end_check   Text   R   0x00400148
+           invalid_character   Text   R   0x004002dc
+      loop_generations_setup   Text   R   0x0040018c
+                     ca_done   Text   R   0x004003a8
+          get_grid_loop_done   Text   R   0x00400160
+               show_row_loop   Text   R   0x0040022c
+              setup_row_loop   Text   R   0x0040021c
+                    get_grid   Text   R   0x004000f4
+             draw_border_end   Text   R   0x0040033c
+                        TREE          A   0x00000074
+                  check_tree   Text   R   0x00400128
+          draw_border_finish   Text   R   0x00400358
+             character_error   Data   R   0x10000b4f
+                invalid_size   Text   R   0x004002a0
+                        null   Data   R   0x10000aa4
+              ca_column_loop   Text   R   0x00400380
+       after_generation_text   Data   R   0x10000adb
+                plus_newline   Data   R   0x10000aa9
+           banner_line1_text   Data   R   0x10000ab2
+                    READ_INT          A   0x00000005
+           draw_border_start   Text   R   0x00400308
+                  wind_error   Data   R   0x10000b30
+                       GRASS          A   0x0000002e
+                     newline   Data   R   0x10000ab0
+                   copyarray   Text   R   0x0040036c
+                      params   Data   R   0x10000000
+            generation_error   Data   R   0x10000b0a
+           grid_border_small   Data   R   0x10000aeb
+       draw_border_setup_end   Text   R   0x00400324
+                        dash   Data   R   0x10000aae
+           banner_line2_text   Data   R   0x10000ac3
+               show_row_done   Text   R   0x0040025c
+             get_generations   Text   R   0x0040007c
+                  size_error   Data   R   0x10000af0
+                      buffer   Data   R   0x1000071c
+                  new_forest   Data   R   0x10000398
+          invalid_generation   Text   R   0x004002b4
+                PRINT_STRING          A   0x00000004
+                        east   Data   R   0x10000aa2
+                        west   Data   R   0x10000aa3
+            loop_generations   Text   R   0x00400194
+                 ca_row_loop   Text   R   0x0040038c
+                        main   Text   R   0x00400000
+                 check_chars   Text   R   0x00400124
+                print_banner   Text   R   0x00400018
+                        plus   Data   R   0x10000aac
+                    get_wind   Text   R   0x004000a0
+             show_generation   Text   R   0x004001b8
+       grid_border_small_end   Data   R   0x10000aed
+     draw_border_setup_start   Text   R   0x004002f0
+                invalid_wind   Text   R   0x004002c8
+             grid_border_big   Data   R   0x10000ae2
+                   main_done   Text   R   0x0040028c
+               get_grid_size   Text   R   0x00400058
+                  old_forest   Data   R   0x10000014
+                       north   Data   R   0x10000aa0
+                       start   Text   R   0x004001fc
+            plus_newline_end   Data   R   0x10000aa5
+                       south   Data   R   0x10000aa1
+                 check_grass   Text   R   0x00400134
+               get_grid_loop   Text   R   0x0040010c
+                 READ_STRING          A   0x00000008
+                   PRINT_INT          A   0x00000001
+      before_generation_text   Data   R   0x10000ad4
+                        BURN          A   0x00000042
+                  check_burn   Text   R   0x00400140
+
+Module:  generate.obj
+ Text segment:  1080 bytes, load point 0x004003b4
+ Symbols:
+                        Name Section Mode    Value
+             start_loop_east   Text   R   0x00400600
+             start_loop_west   Text   R   0x00400560
+                   burn_loop   Text   R   0x004006a8
+               not_tree_east   Text   R   0x0040065c
+               not_tree_west   Text   R   0x004005c8
+                 copy_burned   Text   R   0x00400760
+                        wind   Text   R   0x004003e4
+                        TREE          A   0x00000074
+  generate_column_done_north   Text   R   0x0040048c
+         last_was_tree_north   Text   R   0x00400460
+                   copy_loop   Text   R   0x00400780
+  generate_column_done_south   Text   R   0x00400534
+                found_burned   Text   R   0x004007b8
+                    READ_INT          A   0x00000005
+               generate_done   Text   R   0x004007cc
+         last_was_tree_south   Text   R   0x00400508
+                        down   Text   R   0x004006fc
+                       GRASS          A   0x0000002e
+              not_tree_north   Text   R   0x00400478
+                  found_burn   Text   R   0x004007a4
+                    generate   Text   R   0x004003b4
+                   getparams   Text   R   0x004003d0
+                          up   Text   R   0x0040071c
+         generate_loop_north   Text   R   0x0040043c
+                        burn   Text   R   0x00400684
+              not_tree_south   Text   R   0x00400520
+          last_was_tree_east   Text   R   0x00400644
+          last_was_tree_west   Text   R   0x004005b0
+                        left   Text   R   0x004006dc
+                       right   Text   R   0x004006c4
+         generate_loop_south   Text   R   0x004004e4
+                   increment   Text   R   0x0040073c
+                PRINT_STRING          A   0x00000004
+          generate_loop_east   Text   R   0x00400620
+          generate_loop_west   Text   R   0x0040058c
+                     new_row   Text   R   0x00400754
+            start_loop_north   Text   R   0x00400404
+            start_loop_south   Text   R   0x004004c0
+                        fire   Text   R   0x004006c4
+      generate_row_done_east   Text   R   0x00400670
+      generate_row_done_west   Text   R   0x004005dc
+                 READ_STRING          A   0x00000008
+                   PRINT_INT          A   0x00000001
+                        BURN          A   0x00000042
+
+Module:  r2k_startup.obj
+ Text segment:  36 bytes, load point 0x004007ec
+ Symbols:
+                        Name Section Mode    Value
+                   SYS_EXIT2          A   0x00000011
+              __r2k__entry__   Text   RG  0x004007f0

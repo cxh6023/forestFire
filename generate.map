@@ -1,0 +1,529 @@
+   1 0000               #
+   2 0000               # FILE:			$File$
+   3 0000               # AUTHOR:		Chris Heist
+   4 0000               #
+   5 0000               # DESCRIPTION:
+   6 0000               #	This program takes in two arays, and their grid size, and the wind 
+   7 0000               #	 direction to generate a new array that implements a forest fire dsplay
+   8 0000               #
+   9 0000               # ARGUMENTS:
+  10 0000               #	$a0 = grid size, generations, wind, old array, and new array
+  11 0000               #
+  12 0000               # Numeric Constants
+  13 0000               #
+  14 0000               
+  15 0000               
+  16 0000               PRINT_STRING = 4
+  17 0000               READ_INT = 5
+  18 0000               READ_STRING = 8
+  19 0000               PRINT_INT = 1
+  20 0000               
+  21 0000               TREE = 116
+  22 0000               GRASS = 46
+  23 0000               BURN = 66
+  24 0000               
+  25 0000               #
+  26 0000               # Code Begins Here
+  27 0000               #
+  28 0000               
+  29 0000               generate:
+  30 0000               	# reserve space on the stack
+  31 0000 23BDFFE8		addi	$sp, $sp, -24
+  32 0004 AFBF0014		sw	$ra, 20($sp)
+  33 0008 AFB40010		sw	$s4, 16($sp)
+  34 000c AFB3000C		sw	$s3, 12($sp)
+  35 0010 AFB20008		sw	$s2, 8($sp)
+  36 0014 AFB10004		sw	$s1, 4($sp)
+  37 0018 AFB00000		sw	$s0, 0($sp)
+  38 001c               
+  39 001c               getparams:
+  40 001c 8C900000		lw	$s0, 0($a0)	# store the grid size in s0
+  41 0020 8C910004		lw	$s1, 4($a0)	# stroe the # of generations in s1
+  42 0024 80920008		lb	$s2, 8($a0)	# store the wind dir. in s2
+  43 0028 8C93000C		lw	$s3, 12($a0)	# store the addr of old forest
+  44 002c 8C940010		lw	$s4, 16($a0)	# store the addr of new forest
+  45 0030               
+  46 0030               wind:
+  47 0030 34080045		li	$t0, 69
+  48 0034 11120085		beq	$t0, $s2, start_loop_east
+  49 0038 34080057		li	$t0, 87
+  50 003c 1112005B		beq	$t0, $s2, start_loop_west
+  51 0040 34080053		li	$t0, 83
+  52 0044 11120031		beq	$t0, $s2, start_loop_south
+  53 0048 3408004E		li	$t0, 78
+  54 004c 11120000		beq	$t0, $s2, start_loop_north
+  55 0050               
+  56 0050               # NORTH NORTH NORTH NORTH NORTH NORTH NORTH NORTH NORTH NORTH 
+  57 0050               
+  58 0050               start_loop_north:
+  59 0050 2208FFFF		addi	$t0, $s0, -1
+  60 0054               
+  61 0054 34090000		li	$t1, 0		# row index
+  62 0058 340A0074		li	$t2, 116	# ascii value for t
+  63 005c 340C0042		li	$t4, 66		# ascii value for B
+  64 0060               
+  65 0060 02606821		move	$t5, $s3	
+  66 0064 02080018		mul	$t6, $s0, $t0
+     0068 00007012
+  67 006c 01AE6820		add	$t5, $t5, $t6	# Set the old forest ptr to the bottom left
+  68 0070               
+  69 0070 02807021		move	$t6, $s4
+  70 0074 02080018		mul	$t7, $s0, $t0
+     0078 00007812
+  71 007c 01CF7020		add	$t6, $t6, $t7	# Set the new fort ptr to the bottom left
+  72 0080               
+  73 0080 340F0000		li	$t7, 0
+  74 0084 2419FFFF		li	$t9, -1
+  75 0088               
+  76 0088               
+  77 0088               generate_loop_north:
+  78 0088 11190013		beq	$t0, $t9, generate_column_done_north	# if at the end, go to 
+  79 008c               							#  generate_row_done
+  80 008c 11EA0007		beq	$t7, $t2, last_was_tree_north	# if a tree is not found
+  81 0090               							#  go to not_tree
+  82 0090               
+  83 0090 81AF0000		lb	$t7, 0($t5)
+  84 0094               
+  85 0094 15EA000B		bne	$t7, $t2, not_tree_north
+  86 0098               
+  87 0098               #	bne	$t7, $t4, make_grass	
+  88 0098 A1CF0000		sb	$t7, 0($t6)				# place a tree from 
+  89 009c               							#  current spot
+  90 009c               
+  91 009c 01B06822		sub	$t5, $t5, $s0
+  92 00a0 01D07022		sub	$t6, $t6, $s0
+  93 00a4 2108FFFF		addi	$t0, $t0, -1
+  94 00a8               
+  95 00a8 08000022		j	generate_loop_north
+  96 00ac               
+  97 00ac               last_was_tree_north:	# if the last looked at char was a tree, make sure this 
+  98 00ac               			#  one is now a tree
+  99 00ac               	
+ 100 00ac A1CA0000		sb	$t2, 0($t6)
+ 101 00b0 81AF0000		lb	$t7, 0($t5)
+ 102 00b4               
+ 103 00b4 01B06822		sub	$t5, $t5, $s0
+ 104 00b8 01D07022		sub	$t6, $t6, $s0
+ 105 00bc 2108FFFF		addi	$t0, $t0, -1
+ 106 00c0               
+ 107 00c0 08000022		j	generate_loop_north
+ 108 00c4               
+ 109 00c4               not_tree_north:		# if the current isn't a tree
+ 110 00c4 A1CF0000		sb	$t7, 0($t6)
+ 111 00c8               
+ 112 00c8 01B06822		sub	$t5, $t5, $s0
+ 113 00cc 01D07022		sub	$t6, $t6, $s0
+ 114 00d0 2108FFFF		addi	$t0, $t0, -1
+ 115 00d4               
+ 116 00d4 08000022		j	generate_loop_north
+ 117 00d8               
+ 118 00d8               generate_column_done_north:	# increments the row, instead of the column
+ 119 00d8 2208FFFF		add	$t0, $s0, -1	# index for column
+ 120 00dc 21290001		addi	$t1, $t1, 1	# index for row
+ 121 00e0               
+ 122 00e0 02100018		mul	$t7, $s0, $s0
+     00e4 00007812
+ 123 00e8 01AF6820		add	$t5, $t5, $t7
+ 124 00ec 21AD0001		addi	$t5, $t5, 1
+ 125 00f0               
+ 126 00f0 02100018		mul	$t7, $s0, $s0
+     00f4 00007812
+ 127 00f8 01CF7020		add	$t6, $t6, $t7
+ 128 00fc 21CE0001		addi	$t6, $t6, 1	
+ 129 0100               
+ 130 0100 11300073		beq	$t1, $s0, burn
+ 131 0104 340F0000		li	$t7, 0
+ 132 0108               
+ 133 0108 08000022		j	generate_loop_north
+ 134 010c               
+ 135 010c               # SOUTH SOUTH SOUTH SOUTH SOUTH SOUTH SOUTH SOUTH SOUTH SOUTH SOUTH
+ 136 010c               
+ 137 010c               start_loop_south:
+ 138 010c 34080000		li	$t0, 0		# column indes
+ 139 0110 34090000		li	$t1, 0		# row index
+ 140 0114 340A0074		li	$t2, 116	# ascii value for t
+ 141 0118 340C0042		li	$t4, 66		# ascii value for B
+ 142 011c 02606821		move	$t5, $s3	
+ 143 0120 02807021		move	$t6, $s4
+ 144 0124 340F0000		li	$t7, 0
+ 145 0128 3418002E		li	$t8, 46
+ 146 012c 2219FFFF		addi	$t9, $s0, -1
+ 147 0130               
+ 148 0130               generate_loop_south:
+ 149 0130 11100013		beq	$t0, $s0, generate_column_done_south	# if at the end, go to 
+ 150 0134               							#  generate_row_done
+ 151 0134               
+ 152 0134 11EA0007		beq	$t7, $t2, last_was_tree_south	# if a tree is not found
+ 153 0138               							#  go to not_tree
+ 154 0138               
+ 155 0138 81AF0000		lb	$t7, 0($t5)
+ 156 013c               
+ 157 013c 15EA000B		bne	$t7, $t2, not_tree_south
+ 158 0140               	
+ 159 0140 A1CF0000		sb	$t7, 0($t6)				# place a tree from 
+ 160 0144               							#  current spot
+ 161 0144               
+ 162 0144 01B06820		add	$t5, $t5, $s0
+ 163 0148 01D07020		add	$t6, $t6, $s0
+ 164 014c 21080001		addi	$t0, $t0, 1
+ 165 0150               
+ 166 0150 0800004C		j	generate_loop_south
+ 167 0154               
+ 168 0154               last_was_tree_south:
+ 169 0154 A1CA0000		sb	$t2, 0($t6)
+ 170 0158 81AF0000		lb	$t7, 0($t5)
+ 171 015c               
+ 172 015c 01B06820		add	$t5, $t5, $s0
+ 173 0160 01D07020		add	$t6, $t6, $s0
+ 174 0164 21080001		addi	$t0, $t0, 1
+ 175 0168               
+ 176 0168 0800004C		j	generate_loop_south
+ 177 016c               
+ 178 016c               not_tree_south:
+ 179 016c A1CF0000		sb	$t7, 0($t6)
+ 180 0170               
+ 181 0170 01B06820		add	$t5, $t5, $s0
+ 182 0174 01D07020		add	$t6, $t6, $s0
+ 183 0178 21080001		addi	$t0, $t0, 1
+ 184 017c               
+ 185 017c 0800004C		j	generate_loop_south
+ 186 0180               
+ 187 0180               generate_column_done_south:
+ 188 0180 34080000		li	$t0, 0	# index for column
+ 189 0184 21290001		addi	$t1, $t1, 1	# index for row
+ 190 0188               
+ 191 0188               	#addi	$t7, $s0, -1
+ 192 0188 02100018		mul	$t7, $s0, $s0
+     018c 00007812
+ 193 0190               
+ 194 0190 01AF6822		sub	$t5, $t5, $t7
+ 195 0194 21AD0001		addi	$t5, $t5, 1
+ 196 0198               
+ 197 0198 01CF7022		sub	$t6, $t6, $t7
+ 198 019c 21CE0001		addi	$t6, $t6, 1
+ 199 01a0               
+ 200 01a0 1130004B		beq	$t1, $s0, burn
+ 201 01a4 340F0000		li	$t7, 0
+ 202 01a8               
+ 203 01a8 0800004C		j	generate_loop_south
+ 204 01ac               
+ 205 01ac               
+ 206 01ac               # WEST WEST WEST WEST WEST WEST WEST WEST WEST WEST 
+ 207 01ac               
+ 208 01ac               start_loop_west:
+ 209 01ac 2208FFFF		addi	$t0, $s0, -1	# row indes
+ 210 01b0 34090000		li	$t1, 0		# column index
+ 211 01b4 340A0074		li	$t2, 116	# ascii value for t
+ 212 01b8 340C0042		li	$t4, 66		# ascii value for B
+ 213 01bc 02606821		move	$t5, $s3	
+ 214 01c0 02807021		move	$t6, $s4
+ 215 01c4 01A86820		add	$t5, $t5, $t0
+ 216 01c8 01C87020		add	$t6, $t6, $t0 
+ 217 01cc 340F0000		li	$t7, 0
+ 218 01d0 3418002E		li	$t8, 46
+ 219 01d4 2419FFFF		li	$t9, -1
+ 220 01d8               
+ 221 01d8               generate_loop_west:
+ 222 01d8 11190013		beq	$t0, $t9, generate_row_done_west	# if at the end, go to 
+ 223 01dc               							#  generate_row_done
+ 224 01dc               
+ 225 01dc 11EA0007		beq	$t7, $t2, last_was_tree_west	# if a tree is not found
+ 226 01e0               							#  go to not_tree
+ 227 01e0               
+ 228 01e0 81AF0000		lb	$t7, 0($t5)
+ 229 01e4               
+ 230 01e4 15EA000B		bne	$t7, $t2, not_tree_west
+ 231 01e8               	
+ 232 01e8 A1CF0000		sb	$t7, 0($t6)				# place a tree from 
+ 233 01ec               							#  current spot
+ 234 01ec               
+ 235 01ec 21ADFFFF		addi	$t5, $t5, -1
+ 236 01f0 21CEFFFF		addi	$t6, $t6, -1
+ 237 01f4 2108FFFF		addi	$t0, $t0, -1
+ 238 01f8               
+ 239 01f8 08000076		j	generate_loop_west
+ 240 01fc               
+ 241 01fc               last_was_tree_west:
+ 242 01fc A1CA0000		sb	$t2, 0($t6)
+ 243 0200 81AF0000		lb	$t7, 0($t5)
+ 244 0204               
+ 245 0204 21ADFFFF		addi	$t5, $t5, -1
+ 246 0208 21CEFFFF		addi	$t6, $t6, -1
+ 247 020c 2108FFFF		addi	$t0, $t0, -1
+ 248 0210               
+ 249 0210 08000076		j	generate_loop_west
+ 250 0214               
+ 251 0214               not_tree_west:
+ 252 0214 A1CF0000		sb	$t7, 0($t6)
+ 253 0218               
+ 254 0218 21ADFFFF		addi	$t5, $t5, -1
+ 255 021c 21CEFFFF		addi	$t6, $t6, -1
+ 256 0220 2108FFFF		addi	$t0, $t0, -1
+ 257 0224               
+ 258 0224 08000076		j	generate_loop_west
+ 259 0228               
+ 260 0228               generate_row_done_west:
+ 261 0228 2208FFFF		addi	$t0, $s0, -1		# index for row
+ 262 022c 21290001		addi	$t1, $t1, 1	# index for column
+ 263 0230               
+ 264 0230 01B06820		add	$t5, $t5, $s0
+ 265 0234 01B06820		add	$t5, $t5, $s0
+ 266 0238 01D07020		add	$t6, $t6, $s0
+ 267 023c 01D07020		add	$t6, $t6, $s0
+ 268 0240               
+ 269 0240 11300023		beq	$t1, $s0, burn
+ 270 0244 340F0000		li	$t7, 0
+ 271 0248               
+ 272 0248 08000076		j	generate_loop_west
+ 273 024c               
+ 274 024c               
+ 275 024c               # EAST EAST EAST EAST EAST EAST EAST EAST EAST EAST EAST 
+ 276 024c               
+ 277 024c               start_loop_east:
+ 278 024c 34080000		li	$t0, 0
+ 279 0250 34090000		li	$t1, 0
+ 280 0254 340A0074		li	$t2, 116
+ 281 0258 340C0042		li	$t4, 66
+ 282 025c 02606821		move	$t5, $s3
+ 283 0260 02807021		move	$t6, $s4
+ 284 0264 340F0000		li	$t7, 0
+ 285 0268 3418002E		li	$t8, 46
+ 286 026c               
+ 287 026c               generate_loop_east:
+ 288 026c 11100013		beq	$t0, $s0, generate_row_done_east	# if at the end, go to 
+ 289 0270               							#  generate_row_done
+ 290 0270               
+ 291 0270 11EA0007		beq	$t7, $t2, last_was_tree_east		# if a tree is not found
+ 292 0274               							#  go to not_tree
+ 293 0274               
+ 294 0274 81AF0000		lb	$t7, 0($t5)
+ 295 0278               
+ 296 0278 15EA000B		bne	$t7, $t2, not_tree_east
+ 297 027c               
+ 298 027c               	
+ 299 027c A1CF0000		sb	$t7, 0($t6)				# place a tree from 
+ 300 0280               							#  current spot
+ 301 0280               
+ 302 0280 21AD0001		addi	$t5, $t5, 1
+ 303 0284 21CE0001		addi	$t6, $t6, 1
+ 304 0288 21080001		addi	$t0, $t0, 1
+ 305 028c               
+ 306 028c 0800009B		j	generate_loop_east
+ 307 0290               
+ 308 0290               last_was_tree_east:
+ 309 0290 A1CA0000		sb	$t2, 0($t6)
+ 310 0294 81AF0000		lb	$t7, 0($t5)
+ 311 0298               
+ 312 0298 21AD0001		addi	$t5, $t5, 1
+ 313 029c 21CE0001		addi	$t6, $t6, 1
+ 314 02a0 21080001		addi	$t0, $t0, 1
+ 315 02a4               
+ 316 02a4 0800009B		j	generate_loop_east
+ 317 02a8               
+ 318 02a8               not_tree_east:
+ 319 02a8 A1CF0000		sb	$t7, 0($t6)
+ 320 02ac               
+ 321 02ac 21AD0001		addi	$t5, $t5, 1
+ 322 02b0 21CE0001		addi	$t6, $t6, 1
+ 323 02b4 21080001		addi	$t0, $t0, 1
+ 324 02b8               
+ 325 02b8 0800009B		j	generate_loop_east
+ 326 02bc               
+ 327 02bc               generate_row_done_east:
+ 328 02bc 34080000		li	$t0, 0		# index for row
+ 329 02c0 21290001		addi	$t1, $t1, 1	# index for column
+ 330 02c4               
+ 331 02c4 11300002		beq	$t1, $s0, burn
+ 332 02c8 340F0000		li	$t7, 0
+ 333 02cc               
+ 334 02cc 0800009B		j	generate_loop_east
+ 335 02d0               
+ 336 02d0               burn:	# This method updates the burning mechanic 
+ 337 02d0 34080000		li	$t0, 0	# row counter
+ 338 02d4 34090000		li	$t1, 0	# column coutner
+ 339 02d8 02607021		move	$t6, $s3
+ 340 02dc 0200C021		move	$t8, $s0
+ 341 02e0 340D0042		li	$t5, BURN
+ 342 02e4 340C002E		li	$t4, GRASS
+ 343 02e8 340B0074		li	$t3, TREE
+ 344 02ec 340A002A		li	$t2, 42	# Trees that wil be caught on fire are marked with a 
+ 345 02f0               			#  *(42 in ascii) to the be later scanned through and 
+ 346 02f0               			#  changed to a B. THis prevents overeading chars that 
+ 347 02f0               			#  just recently became B's and have not already been B's.
+ 348 02f0 2419FFFF		li	$t9, -1
+ 349 02f4               	
+ 350 02f4               	
+ 351 02f4               burn_loop:	# Loops through the old forest and new forest tracking what needs to be burned and updatin the new array.
+ 352 02f4 1130002D		beq	$t1, $s0, copy_burned
+ 353 02f8               
+ 354 02f8 81CF0000		lb	$t7, 0($t6)
+ 355 02fc               	
+ 356 02fc 11ED0004		beq	$t7, $t5, fire
+ 357 0300               
+ 358 0300 21080001		addi	$t0, $t0, 1
+ 359 0304 21CE0001		addi	$t6, $t6, 1
+ 360 0308 11100025		beq	$t0, $s0, new_row
+ 361 030c               	
+ 362 030c 080000BD		j	burn_loop
+ 363 0310               
+ 364 0310               fire:
+ 365 0310               	#sb	$t4, 0($t6)
+ 366 0310               
+ 367 0310               # These just check up, down, left, and right to if any of those four spots need
+ 368 0310               #  need to be turned into a Burning tree	
+ 369 0310               right:
+ 370 0310 21080001		addi	$t0, $t0, 1
+ 371 0314 21CE0001		addi	$t6, $t6, 1
+ 372 0318               	
+ 373 0318 81CF0000		lb	$t7, 0($t6)
+ 374 031c 11100002		beq	$t0, $s0, left
+ 375 0320 15EB0001		bne	$t7, $t3, left
+ 376 0324 A1CA0000		sb	$t2, 0($t6)
+ 377 0328               
+ 378 0328               left:
+ 379 0328 2108FFFF		addi	$t0, $t0, -1
+ 380 032c 21CEFFFF		addi	$t6, $t6, -1	# RESET
+ 381 0330               
+ 382 0330 2108FFFF		addi	$t0, $t0, -1
+ 383 0334 21CEFFFF		addi	$t6, $t6, -1
+ 384 0338               
+ 385 0338 81CF0000		lb	$t7, 0($t6)
+ 386 033c 11190002		beq	$t0, $t9, down
+ 387 0340 15EB0001		bne	$t7, $t3, down
+ 388 0344 A1CA0000		sb	$t2, 0($t6)
+ 389 0348               
+ 390 0348               down:
+ 391 0348 21080001		addi	$t0, $t0, 1
+ 392 034c 21CE0001		addi	$t6, $t6, 1	# RESET
+ 393 0350               
+ 394 0350 21290001		addi	$t1, $t1, 1
+ 395 0354 01D07020		add	$t6, $t6, $s0
+ 396 0358               
+ 397 0358 81CF0000		lb	$t7, 0($t6)
+ 398 035c 11300002		beq	$t1, $s0, up
+ 399 0360 15EB0001		bne	$t7, $t3, up
+ 400 0364 A1CA0000		sb	$t2, 0($t6)
+ 401 0368               
+ 402 0368               up:
+ 403 0368 2129FFFF		addi	$t1, $t1, -1
+ 404 036c 01D07022		sub	$t6, $t6, $s0	# RESET
+ 405 0370               
+ 406 0370 2129FFFF		addi	$t1, $t1, -1
+ 407 0374 01D07022		sub	$t6, $t6, $s0
+ 408 0378               	
+ 409 0378 81CF0000		lb	$t7, 0($t6)	
+ 410 037c 11390002		beq	$t1, $t9, increment
+ 411 0380 15EB0001		bne	$t7, $t3, increment
+ 412 0384 A1CA0000		sb	$t2, 0($t6)
+ 413 0388               
+ 414 0388               increment:
+ 415 0388 21290001		addi	$t1, $t1, 1
+ 416 038c 01D07020		add	$t6, $t6, $s0	# RESET
+ 417 0390               
+ 418 0390 21080001		addi	$t0, $t0, 1
+ 419 0394 21CE0001		addi	$t6, $t6, 1
+ 420 0398 11100001		beq	$t0, $s0, new_row
+ 421 039c 080000BD		j	burn_loop
+ 422 03a0               
+ 423 03a0               new_row:
+ 424 03a0 21290001		addi	$t1, $t1, 1
+ 425 03a4 34080000		li	$t0, 0
+ 426 03a8 080000BD		j	burn_loop
+ 427 03ac               
+ 428 03ac               copy_burned: # This method goes through the array and changes any *'s to B's
+ 429 03ac               
+ 430 03ac 34080000		li	$t0, 0
+ 431 03b0 02100018		mul	$t1, $s0, $s0
+     03b4 00004812
+ 432 03b8 340A0042		li	$t2, BURN
+ 433 03bc 340B002E		li	$t3, GRASS
+ 434 03c0 340C002A		li	$t4, 42
+ 435 03c4 02606821		move	$t5, $s3
+ 436 03c8 02807021		move	$t6, $s4
+ 437 03cc               
+ 438 03cc               copy_loop:
+ 439 03cc 11090012		beq	$t0, $t1, generate_done
+ 440 03d0               	
+ 441 03d0 81AF0000		lb	$t7, 0($t5)
+ 442 03d4 11EC0006		beq	$t7, $t4, found_burn
+ 443 03d8 81AF0000		lb	$t7, 0($t5)
+ 444 03dc 11EA0009		beq	$t7, $t2, found_burned
+ 445 03e0 21080001		addi	$t0, $t0, 1
+ 446 03e4 21AD0001		addi	$t5, $t5, 1
+ 447 03e8 21CE0001		addi	$t6, $t6, 1
+ 448 03ec 080000F3		j	copy_loop 	
+ 449 03f0               
+ 450 03f0               found_burn:
+ 451 03f0 A1CA0000		sb	$t2, 0($t6)
+ 452 03f4               
+ 453 03f4 21080001		addi	$t0, $t0, 1
+ 454 03f8 21AD0001		addi	$t5, $t5, 1
+ 455 03fc 21CE0001		addi	$t6, $t6, 1
+ 456 0400 080000F3		j	copy_loop 	
+ 457 0404               
+ 458 0404               found_burned:
+ 459 0404 A1CB0000		sb	$t3, 0($t6)
+ 460 0408               
+ 461 0408 21080001		addi	$t0, $t0, 1
+ 462 040c 21AD0001		addi	$t5, $t5, 1
+ 463 0410 21CE0001		addi	$t6, $t6, 1
+ 464 0414 080000F3		j	copy_loop 	
+ 465 0418               
+ 466 0418               generate_done:
+ 467 0418               
+ 468 0418               	# empty the reserved space on the stack
+ 469 0418 8FB00000		lw	$s0, 0($sp)
+ 470 041c 8FB10004		lw	$s1, 4($sp)
+ 471 0420 8FB20008		lw	$s2, 8($sp)
+ 472 0424 8FB3000C		lw	$s3, 12($sp)
+ 473 0428 8FB40010		lw	$s4, 16($sp)
+ 474 042c 8FBF0014		lw	$ra, 20($sp)
+ 475 0430 23BD0018		addi	$sp, $sp, 24
+ 476 0434               
+ 477 0434 03E00008		jr	$ra
+
+
+BURN                        = 00000042   
+GRASS                       = 0000002E   
+PRINT_INT                   = 00000001   
+PRINT_STRING                = 00000004   
+READ_INT                    = 00000005   
+READ_STRING                 = 00000008   
+TREE                        = 00000074   
+burn                          000002D0 R  text 
+burn_loop                     000002F4 R  text 
+copy_burned                   000003AC R  text 
+copy_loop                     000003CC R  text 
+down                          00000348 R  text 
+fire                          00000310 R  text 
+found_burn                    000003F0 R  text 
+found_burned                  00000404 R  text 
+generate                      00000000 R  text 
+generate_column_done_north    000000D8 R  text 
+generate_column_done_south    00000180 R  text 
+generate_done                 00000418 R  text 
+generate_loop_east            0000026C R  text 
+generate_loop_north           00000088 R  text 
+generate_loop_south           00000130 R  text 
+generate_loop_west            000001D8 R  text 
+generate_row_done_east        000002BC R  text 
+generate_row_done_west        00000228 R  text 
+getparams                     0000001C R  text 
+increment                     00000388 R  text 
+last_was_tree_east            00000290 R  text 
+last_was_tree_north           000000AC R  text 
+last_was_tree_south           00000154 R  text 
+last_was_tree_west            000001FC R  text 
+left                          00000328 R  text 
+new_row                       000003A0 R  text 
+not_tree_east                 000002A8 R  text 
+not_tree_north                000000C4 R  text 
+not_tree_south                0000016C R  text 
+not_tree_west                 00000214 R  text 
+right                         00000310 R  text 
+start_loop_east               0000024C R  text 
+start_loop_north              00000050 R  text 
+start_loop_south              0000010C R  text 
+start_loop_west               000001AC R  text 
+up                            00000368 R  text 
+wind                          00000030 R  text 
